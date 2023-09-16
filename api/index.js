@@ -80,4 +80,8 @@ app.get("/profile", (req, res) => {
   }
 });
 
-//1.28.57
+app.post('/logout', (req, res) => {
+  res.cookie('token', "").json(true)
+})
+
+//2

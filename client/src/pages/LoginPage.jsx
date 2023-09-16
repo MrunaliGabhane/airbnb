@@ -15,7 +15,7 @@ export const LoginPage = () => {
       alert('Login Successful')
       setRedirect(true)
     } catch (error) {
-      alert("Login failed", error)
+      alert( error)
     }
   }
 
