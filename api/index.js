@@ -4,10 +4,11 @@ const { default: mongoose } = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User.js");
+const { PlaceModel } = require("./models/Place.js");
 const cookieParser = require("cookie-parser");
 const imageDownloader = require("image-downloader");
-const multer = require('multer')
-const fs = require('fs')
+const multer = require("multer");
+const fs = require("fs");
 
 require("dotenv").config();
 const app = express();
@@ -98,22 +99,81 @@ app.post("/upload-by-link", async (req, res) => {
   res.json(newName);
 });
 
-
 const photosMiddleware = multer({ dest: "uploads/" });
 app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
   const uploadedFiles = [];
-  for(let i=0; i<req.files.length; i++){
-    const {path, originalname} = req.files[i];
-   const parts =  originalname.split('.')
-   const ext = parts[parts.length - 1]
-    const newPath = path + '.' + ext;
+  for (let i = 0; i < req.files.length; i++) {
+    const { path, originalname } = req.files[i];
+    const parts = originalname.split(".");
+    const ext = parts[parts.length - 1];
+    const newPath = path + "." + ext;
     //console.log(newPath)
-    fs.renameSync(path,newPath)
-    uploadedFiles.push(newPath.replace('uploads\\',''))
+    fs.renameSync(path, newPath);
+    uploadedFiles.push(newPath.replace("uploads\\", ""));
   }
   res.json(uploadedFiles);
 });
 
+app.post("/places", (req, res) => {
+  const { token } = req.cookies;
+  const {
+    title,
+    address,
+    addedPhotos,
+    description,
+    perks,
+    extraInfo,
+    checkIn,
+    checkOut,
+    maxGuests,
+  } = req.body;
+  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    if (err) throw err;
+    const placeDoc = new PlaceModel({
+      owner: userData.id,
+      title,
+      address,
+      addedPhotos,
+      description,
+      perks,
+      extraInfo,
+      checkIn,
+      checkOut,
+      maxGuests,
+    });
+    await placeDoc.save();
+    res.json(placeDoc);
+  });
+});
+
+app.get("/places", (req, res) => {
+  const { token } = req.cookies;
+  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    const { id } = userData;
+    res.json(await PlaceModel.find({ owner: id }));
+  });
+});
+
+// app.get('/places', async (req, res) => {
+//   try {
+//     const { token } = req.cookies;
+
+//     if (!token) {
+//       return res.status(401).json({ message: 'Unauthorized' });
+//     }
+
+//     const userData = jwt.verify(token, jwtSecret);
+//     const { id } = userData;
+
+//     const places = await PlaceModel.find({ owner: id });
+
+//     res.json(places);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// });
+
 app.listen(8080);
 
-//3:22
+//4:9

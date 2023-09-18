@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
-import { Header } from '../Header'
+import { Header } from "../Header";
 
 export const IndexPage = () => {
-  return (
-    <div>
-        index page here
-    </div>
-  )
-}
+  return <div>index page here</div>;
+};

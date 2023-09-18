@@ -6,7 +6,7 @@ export const Header = () => {
   return (
     <div>
       <header className=" flex justify-between">
-        <Link to={'/'} href="" className="flex item-center gap-1">
+        <Link to={"/"} href="" className="flex item-center gap-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -45,7 +45,7 @@ export const Header = () => {
           </button>
         </div>
         <Link
-          to={user? '/account' : "/login"}
+          to={user ? "/account" : "/login"}
           className="flex items-center gap-2 border border-gray-300 rounded-full py-2 px-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
