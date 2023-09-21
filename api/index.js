@@ -133,7 +133,7 @@ app.post("/places", (req, res) => {
       owner: userData.id,
       title,
       address,
-      addedPhotos,
+      photos: addedPhotos,
       description,
       perks,
       extraInfo,
@@ -154,25 +154,47 @@ app.get("/places", (req, res) => {
   });
 });
 
-// app.get('/places', async (req, res) => {
-//   try {
-//     const { token } = req.cookies;
+app.get("/places/:id", async (req, res) => {
+  const { id } = req.params;
+  res.json(await PlaceModel.findById(id));
+});
 
-//     if (!token) {
-//       return res.status(401).json({ message: 'Unauthorized' });
-//     }
-
-//     const userData = jwt.verify(token, jwtSecret);
-//     const { id } = userData;
-
-//     const places = await PlaceModel.find({ owner: id });
-
-//     res.json(places);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// });
+app.put("/places", async (req, res) => {
+  const { token } = req.cookies;
+  const {
+    id,
+    title,
+    address,
+    addedPhotos,
+    description,
+    perks,
+    extraInfo,
+    checkIn,
+    checkOut,
+    maxGuests,
+  } = req.body;
+  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    if (err) throw err ;
+    const placeDoc = await PlaceModel.findById(id);
+    //console.log(userData.id)
+    //console.log(placeDoc.owner.toString())
+    if (userData.id === placeDoc.owner.toString()) {
+      placeDoc.set({
+        title,
+        address,
+        photos:addedPhotos,
+        description,
+        perks,
+        extraInfo,
+        checkIn,
+        checkOut,
+        maxGuests,
+      });
+      await placeDoc.save();
+      res.json("ok");
+    }
+  });
+});
 
 app.listen(8080);
 
