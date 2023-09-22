@@ -114,6 +114,8 @@ app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
   res.json(uploadedFiles);
 });
 
+
+
 app.post("/places", (req, res) => {
   const { token } = req.cookies;
   const {
@@ -206,4 +208,5 @@ app.get("/places", async (req, res) => {
 
 app.listen(8080);
 
-//4:9
+//5:42
+
