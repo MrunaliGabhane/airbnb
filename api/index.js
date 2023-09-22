@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User.js");
 const { PlaceModel } = require("./models/Place.js");
+const Booking = require("./models/Booking.js");
 const cookieParser = require("cookie-parser");
 const imageDownloader = require("image-downloader");
 const multer = require("multer");
@@ -114,8 +115,6 @@ app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
   res.json(uploadedFiles);
 });
 
-
-
 app.post("/places", (req, res) => {
   const { token } = req.cookies;
   const {
@@ -206,7 +205,24 @@ app.get("/places", async (req, res) => {
   res.json(await PlaceModel.find());
 });
 
+app.post("/bookings", (req, res) => {
+  const { place, checkIn, checkOut, numberOfGuests, name, phone, price } =
+    req.body;
+  Booking.create({
+    place,
+    checkIn,
+    checkOut,
+    numberOfGuests,
+    name,
+    phone,
+    price,
+  }).then(( doc)=>{
+    res.json(doc)
+  }).catch((err)=>{
+    throw err
+  })
+});
+
 app.listen(8080);
 
 //5:42
-
